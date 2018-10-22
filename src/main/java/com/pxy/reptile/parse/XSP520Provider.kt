@@ -49,14 +49,8 @@ class XSP520Provider : IResolverProvider {
                                     }
                                     homeItem.add(baseUrl + detailLink)
                                 }
-                            } else {
-                                browser?.reload()
-                                return
                             }
                         }
-                    } else {
-                        browser?.reload()
-                        return
                     }
                 }
                 doc.getElementsByClass("pagelink_a").forEach {
@@ -68,7 +62,6 @@ class XSP520Provider : IResolverProvider {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            browser?.loadURL(url)
         }
 
     }
@@ -79,6 +72,7 @@ class XSP520Provider : IResolverProvider {
         if (currentDetailUrl != url) {
             currentDetailUrl = url
             val pa = path.getElementsByTag("a")[0].attr("href")
+            Thread.sleep(3000)
             browser?.loadURL(baseUrl + pa)
         }
 
@@ -89,7 +83,7 @@ class XSP520Provider : IResolverProvider {
 
     }
 
-    override fun onParesedPlayUrl(playUrl: String, browser: Browser?, timer: Timer?) {
+    override fun onParesedPlayUrl(playUrl: String, browser: Browser?, timer: Timer?, resolver: Resolver) {
 
         getXSP520MapBean(browser).apply {
             if (this?.playerUrlOne.isNullOrEmpty()) {
@@ -99,6 +93,7 @@ class XSP520Provider : IResolverProvider {
             }
             if ((!this?.playerUrlOne.isNullOrEmpty() && !this?.playerUrlTow.isNullOrEmpty()) || playUrl == "http://null") {
                 timer?.cancel()
+                resolver.timer = null
                 System.out.println("标题:${this?.title} \n 封面图片: \n ${this?.coverImageUrl} \n 播放地址一:${this?.playerUrlOne} \n 播放地址二:${this?.playerUrlTow}")
                 store(this)
                 itemPosition++
@@ -108,6 +103,7 @@ class XSP520Provider : IResolverProvider {
     }
 
     private fun parseOneDetail(browser: Browser?) {
+        Thread.sleep(3000)
         if (homeItem.size > itemPosition) {
             System.out.println("****************${homeItem[itemPosition]}")
             browser?.loadURL(homeItem[itemPosition])
@@ -135,11 +131,11 @@ class XSP520Provider : IResolverProvider {
     private fun store(bean: XSP520MapBean?) {
         if (bean == null) return
         transaction {
-            val isExist = MVideo.select {
+            val isNull = MVideo.select {
                 MVideo.title.eq(bean.title)
             }.isNull("")
 
-            if (!isExist) {
+            if (isNull) {
                 MVideo.insert {
                     it[MVideo.coverImageUrl] = bean.coverImageUrl
                     it[MVideo.playerUrlOne] = bean.playerUrlOne

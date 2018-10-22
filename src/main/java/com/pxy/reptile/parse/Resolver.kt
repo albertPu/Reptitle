@@ -16,7 +16,7 @@ class Resolver : BrowserListener, ProxyListener {
 
     override fun onProxy(url: String) {
         if (url.endsWith(".m3u8")) {
-            xsP520Provider?.onParesedPlayUrl(url, browser, timer)
+            xsP520Provider?.onParesedPlayUrl(url, browser, timer, this)
         }
     }
 
@@ -30,12 +30,16 @@ class Resolver : BrowserListener, ProxyListener {
             xsP520Provider?.onParseDetail(url, document, browser)
         }
         if (url.contains(XSP520Provider.play)) {
-            timer = Timer()
-            timer?.schedule(object : TimerTask() {
-                override fun run() {
-                    xsP520Provider?.onParesedPlayUrl("http://null", browser, timer)
-                }
-            }, (10 * 1000).toLong())
+            System.out.println("播放界面 $url")
+            if (timer == null) {
+                timer = Timer()
+                timer?.schedule(object : TimerTask() {
+                    override fun run() {
+                        xsP520Provider?.onParesedPlayUrl("http://null", browser, timer, this@Resolver)
+                    }
+                }, (10 * 1000).toLong())
+            }
+
         }
     }
 }

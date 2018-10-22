@@ -31,14 +31,14 @@ object JxBrowser {
     private const val ProxyHost = "127.0.0.1"
     private const val ProxyPort = 9999
     // private const val url = "http://www.520xsp.com/?m=vod-type-id-21.html"
-    private const val url = "http://www.520xsp.com/?m=vod-type-id-2-pg-41.html"
-    // private const val url = "https://www.baidu.com"
+    private const val url = "http://www.520xsp.com/?m=vod-type-id-2.html"
+ //   private const val url = "https://www.baidu.com"
     private var currtentUrl: String? = ""
     private var isCall = false
 
     @JvmStatic
     fun main(agr0: Array<String>) {
-        JxBrowserCrack()
+        //JxBrowserCrack()
         DataBaseFactory.init()
 
         Resolver().apply {
